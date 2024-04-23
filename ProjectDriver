@@ -44,6 +44,13 @@ public class ProjectDriver {
 
             switch (option) {
                 case "A":
+			System.out.print("Enter Student’s ID");
+                	String id = scanner.next();
+                	//need to check id for duplicates/invalid format using exception class called IdException
+                	System.out.print("Student Type (PhD, MS or Undergrad): ");
+                	String stdType = scanner.next();
+                	System.out.println("Enter Remaining information");
+                	String info = scanner.next();
                     break;
                 case "B":
                     break;
@@ -183,6 +190,12 @@ class MsStudent extends GraduateStudent{
     public String getGradId(){
         return id;
     
+}
+
+class IdException extends Exception {
+	public IdException (){
+		
+	}
 }
 
 }
