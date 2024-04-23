@@ -109,10 +109,16 @@ public class ProjectDriver {
 
 		switch (option) {
                 case "A":
+			System.out.println("Enter the Class/Lab Number: ")
+			String crn = scanner.next();
                     break;
                 case "B":
+			System.out.println("Enter the Class/Lab Number to delete: ")
+			String deleteCrn = scanner.next();
                     break;
                 case "C":
+			System.out.println("Enter Lab or Lecture: ")
+			String lab0rLecture = scanner.next().toUpperCase();
                     break;
                 case "X":
                     exit = true;
