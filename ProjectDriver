@@ -40,12 +40,11 @@ public class ProjectDriver {
             System.out.println("A - Search for a course or lab using the CRN");
             System.out.println("B - Delete a course or lab");
             System.out.println("C - Add a lab to a course");
-            System.out.println("D - Add a course");
             System.out.println("X - Back to main menu");
             System.out.print("Enter your selection: ");
             String option = scanner.next().toUpperCase();
 
-			switch (option) {
+		switch (option) {
                 case "A":
                     //searchCourseByCRN();
                     break;
