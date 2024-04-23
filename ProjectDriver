@@ -30,6 +30,34 @@ public class ProjectDriver {
     }
 
     public static void studentManagementMenu() {
+	boolean exit = false;
+        while (!exit) {
+            System.out.println("-------------------");
+            System.out.println("Student Management Menu:");
+            System.out.println("A - Search add a student");
+            System.out.println("B - Delete a Student");
+            System.out.println("C - Print Fee Invoice");
+            System.out.println("D - Print List of Students");
+            System.out.println("X - Back to main menu");
+            System.out.print("Enter your selection: ");
+            String option = scanner.next().toUpperCase();
+
+            switch (option) {
+                case "A":
+                    break;
+                case "B":
+                    break;
+                case "C":
+                    break;
+                case "D":
+                    break;
+                case "X":
+                    exit = true;
+                    break;
+                default:
+                    System.out.println("Invalid option. Please try again.");
+            }
+        }
     }
 
     public static void courseManagementMenu() {
@@ -46,16 +74,10 @@ public class ProjectDriver {
 
 		switch (option) {
                 case "A":
-                    //searchCourseByCRN();
                     break;
                 case "B":
-                   // deleteCourse();
                     break;
                 case "C":
-                   // addLabToCourse();
-                    break;
-                case "D":
-                  //  addCourse();
                     break;
                 case "X":
                     exit = true;
