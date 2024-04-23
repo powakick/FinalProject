@@ -1,0 +1,114 @@
+import java.io.*;
+
+
+
+public class ProjectDriver {
+
+
+}
+
+    
+   
+ 
+
+
+
+
+abstract class Student{
+    String Name;
+    String id;
+
+    public abstract void printInvoice();
+    public void saveData(){
+
+    }
+
+}
+
+//UndergraduateStudent Class
+class UndergraduateStudent extends Student{
+
+    public void printInvoice(){
+
+    }
+
+    public void setUndergradName(String Name){
+        this.Name = Name;
+    }
+
+    public String getUndergradName(){
+        return Name;
+    }
+
+    public void setUndergradId(String id){
+        this.id = id;
+    }
+
+    public String getUndergradId(){
+        return id;
+    }
+
+}
+
+
+//abstract Graduate class
+abstract class GraduateStudent extends Student{
+    
+}
+
+
+
+
+//pHD student class ext. grad
+class PhdStudent extends GraduateStudent{
+
+    public void printInvoice(){
+        
+    }
+
+    public void setPhdName(String Name){
+        this.Name = Name;
+    }
+
+    public String getPhdName(){
+        return Name;
+    }
+
+    public void setPhdId(String id){
+        this.id = id;
+    }
+
+    public String getPhdId(){
+        return id;
+    }
+}
+
+
+
+//MsStudent ext. Grad
+class MsStudent extends GraduateStudent{
+    public void printInvoice(){
+        
+    }
+
+    public void setGradName(String Name){
+        this.Name = Name;
+    }
+
+    public String getGradName(){
+        return Name;
+    }
+
+    public void setGradId(String id){
+        this.id = id;
+    }
+
+    public String getGradId(){
+        return id;
+    
+}
+
+}
+
+
+
