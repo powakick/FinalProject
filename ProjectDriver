@@ -44,13 +44,41 @@ public class ProjectDriver {
 
             switch (option) {
                 case "A":
+			boolean idInvalid = false;
 			System.out.print("Enter Student’s ID");
                 	String id = scanner.next();
-                	//need to check id for duplicates/invalid format using exception class called IdException
-                	System.out.print("Student Type (PhD, MS or Undergrad): ");
-                	String stdType = scanner.next();
-                	System.out.println("Enter Remaining information");
-                	String info = scanner.next();
+			//****need to check id for duplicates
+
+			//checks for invalid id format
+                	try {
+                		char[] arr = id.toCharArray();
+                		
+                		if (arr.length == 6) {
+                			for (int i = 0; i < arr.length; i++) {
+                    				if ((i == 0 || i == 1) && (Character.isLetter(arr[i]) == false)) {
+                    					idInvalid = true;
+                    				}
+                    				if ((i > 1) && (Character.isDigit(arr[i]) == false)) {
+                    					idInvalid = true;
+                    				}
+                    			}
+                		}
+                		else {
+                			idInvalid = true;
+                		}
+                			
+                		if (idInvalid == true) {
+	                		throw new IdException();
+                		}
+                	}
+                	catch (IdException ex){}
+
+			if (idInvalid == false) {
+	                	System.out.print("Student Type (PhD, MS or Undergrad): ");
+        	        	String stdType = scanner.next();
+                		System.out.println("Enter Remaining information");
+                		String info = scanner.next();
+			}
                     break;
                 case "B":
                     break;
@@ -189,15 +217,16 @@ class MsStudent extends GraduateStudent{
 
     public String getGradId(){
         return id;
-    
+    }
 }
 
+
+//idException
 class IdException extends Exception {
-	public IdException (){
-		
-	}
-}
-
+   	public IdException(){
+   		System.out.println("Invalid id format or ID already exists");
+   		System.out.println("Try again later!\n");
+   	}
 }
 
 
