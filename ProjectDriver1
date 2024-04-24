@@ -213,19 +213,19 @@ public class ProjectDriver {
             }
         }
 
-        System.out.println("PhD Students");
+        System.out.println("\nPhD Students");
         System.out.println("------------");
         for (String name : phdStudents) {
             System.out.println("- " + name);
         }
 
-        System.out.println("MS Students");
+        System.out.println("\nMS Students");
         System.out.println("------------");
         for (String name : msStudents) {
             System.out.println("- " + name);
         }
 
-        System.out.println("Undergraduate Students");
+        System.out.println("\nUndergraduate Students");
         System.out.println("------------");
         for (String name : undergradStudents) {
             System.out.println("- " + name);
