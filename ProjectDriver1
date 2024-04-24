@@ -90,109 +90,72 @@ public class ProjectDriver {
         // Add the ID to the set
         studentIds.add(id);
 
-        //checks for invalid id format
-        try {
-            char[] arr = id.toCharArray();
-
-            if (arr.length == 6) {
-                for (int i = 0; i < arr.length; i++) {
-                    if ((i == 0 || i == 1) && (!Character.isLetter(arr[i]))) {
-                        idInvalid = true;
-                    }
-                    if ((i > 1) && (!Character.isDigit(arr[i]))) {
-                        idInvalid = true;
-                    }
-                }
-            } else {
-                idInvalid = true;
-            }
-
-            if (idInvalid) {
-                throw new IdException();
-            }
-
-        } catch (IdException ex) {
-            System.out.println("Invalid ID format. Please enter a valid ID.");
-            return;
-        }
-
-        if (!idInvalid) {
-            System.out.print("Student Type (PhD, MS or Undergrad): ");
-            String stdType = scanner.next();
-            System.out.println("Enter Remaining information");
-            String remainingInfo = scanner.nextLine();
-            remainingInfo = scanner.nextLine();
-            
-            // Split the information by |
-            String[] infoArray = remainingInfo.split("\\|");
-            
-            if (stdType.equalsIgnoreCase("PhD")) {
+        System.out.print("Enter Student's Type (PhD, MS or Undergrad): ");
+        String stdType = scanner.next().toLowerCase();
+        System.out.println("Enter Remaining information (name|course): ");
+        String remainingInfo = scanner.nextLine();
+        remainingInfo = scanner.nextLine();
+        
+        // Split the information by |
+        String[] infoArray = remainingInfo.split("\\|");
+        
+        switch (stdType) {
+            case "phd":
                 if (infoArray.length == 4) { 
-                    // Create a PhD student and add it to the map
                     createPhdStudent(id, infoArray);
                 } else {
                     System.out.println("Invalid format for Ph.D. student information.");
                 }
-            } else if (stdType.equalsIgnoreCase("MS")) {
-                // Create an MS student and add it to the map
-            } else if (stdType.equalsIgnoreCase("Undergrad")) {
-                // Create an Undergrad student and add it to the map
-            } else {
+                break;
+            case "ms":
+                if (infoArray.length == 2) { 
+                    createMsStudent(id, infoArray);
+                } else {
+                    System.out.println("Invalid format for MS student information.");
+                }
+                break;
+            case "undergrad":
+                if (infoArray.length == 2) { 
+                    createUndergradStudent(id, infoArray);
+                } else {
+                    System.out.println("Invalid format for undergraduate student information.");
+                }
+                break;
+            default:
                 System.out.println("Invalid student type.");
-            }
         }
     }
 
-    //create and add a PhD student to the map
     public static void createPhdStudent(String id, String[] infoArray) {
-        // Get information from the infoArray
         String name = infoArray[0].trim();
         String advisor = infoArray[1].trim();
         String topic = infoArray[2].trim();
         String classCode = infoArray[3].trim();
         
-        // Create a list to hold class codes
         List<String> classCodes = Arrays.asList(classCode.split(","));
         
-        // Create a PhD student object
         PhdStudent phdStudent = new PhdStudent(name, id, advisor, topic, classCodes);
         
-        // Add the PhD student to the map
         students.put(id, phdStudent);
     }
 
-    private static Student createUndergraduateStudent(String id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public static void createMsStudent(String id, String[] infoArray) {
+        String name = infoArray[0].trim();
+        String course = infoArray[1].trim();
+        
+        MsStudent msStudent = new MsStudent(name, course);
+        
+        students.put(id, msStudent);
+    }
 
-	private static Student createMsStudent(String id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public static PhdStudent createPhdStudent(String id, String info) {
-	    String[] parts = info.split("\\|");
-	    if (parts.length != 4) {
-	        System.out.println("Invalid format for Ph.D. student information.");
-	        return null;
-	    }
-
-	    // Extracting individual pieces of information
-	    String name = parts[0].trim();
-	    String advisor = parts[1].trim();
-	    String topic = parts[2].trim();
-	    String[] classCodes = parts[3].split(",");
-
-	    // Create a list to store class codes
-	    List<String> classCodeList = new ArrayList<>();
-	    for (String code : classCodes) {
-	        classCodeList.add(code.trim());
-	    }
-
-	    // Create and return PhdStudent object
-	    return new PhdStudent(name, id, advisor, topic, classCodeList);
-	}
+    public static void createUndergradStudent(String id, String[] infoArray) {
+        String name = infoArray[0].trim();
+        String course = infoArray[1].trim();
+        
+        UndergraduateStudent undergradStudent = new UndergraduateStudent(name, course);
+        
+        students.put(id, undergradStudent);
+    }
 
     
 	public static void deleteStudent() {
@@ -440,4 +403,3 @@ class IdException extends Exception {
         super("Invalid id format or ID already exists");
     }
 }
-
