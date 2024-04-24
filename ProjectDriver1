@@ -2,9 +2,18 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class ProjectDriver {
-   static Scanner scanner = new Scanner(System.in);
+    static Scanner scanner = new Scanner(System.in);
+    static Set<String> studentIds = new HashSet<>();
+    static Map<String, Student> students = new HashMap<>();
+
     public static void main(String[] args) {
         boolean exit = false;
         while (!exit) {
@@ -25,16 +34,19 @@ public class ProjectDriver {
                 case 0:
                     exit = true;
                     break;
+                default:
+                    System.out.println("Invalid option. Please try again.");
             }
         }
+        scanner.close(); 
     }
 
     public static void studentManagementMenu() {
-	boolean exit = false;
+        boolean exit = false;
         while (!exit) {
             System.out.println("-------------------");
             System.out.println("Student Management Menu:");
-            System.out.println("A - Search add a student");
+            System.out.println("A - Add a student");
             System.out.println("B - Delete a Student");
             System.out.println("C - Print Fee Invoice");
             System.out.println("D - Print List of Students");
@@ -44,47 +56,16 @@ public class ProjectDriver {
 
             switch (option) {
                 case "A":
-			boolean idInvalid = false;
-			System.out.print("Enter Student’s ID");
-                	String id = scanner.next();
-			//****need to check id for duplicates
-
-			//checks for invalid id format
-                	try {
-                		char[] arr = id.toCharArray();
-                		
-                		if (arr.length == 6) {
-                			for (int i = 0; i < arr.length; i++) {
-                    				if ((i == 0 || i == 1) && (Character.isLetter(arr[i]) == false)) {
-                    					idInvalid = true;
-                    				}
-                    				if ((i > 1) && (Character.isDigit(arr[i]) == false)) {
-                    					idInvalid = true;
-                    				}
-                    			}
-                		}
-                		else {
-                			idInvalid = true;
-                		}
-                			
-                		if (idInvalid == true) {
-	                		throw new IdException();
-                		}
-                	}
-                	catch (IdException ex){}
-
-			if (idInvalid == false) {
-	                	System.out.print("Student Type (PhD, MS or Undergrad): ");
-        	        	String stdType = scanner.next();
-                		System.out.println("Enter Remaining information");
-                		String info = scanner.next();
-			}
+                    addStudent();
                     break;
                 case "B":
+                    deleteStudent();
                     break;
                 case "C":
+                    printFeeInvoice();
                     break;
                 case "D":
+                    printListOfStudents();
                     break;
                 case "X":
                     exit = true;
@@ -94,6 +75,196 @@ public class ProjectDriver {
             }
         }
     }
+
+    public static void addStudent() {
+        boolean idInvalid = false;
+        System.out.print("Enter Student’s ID: ");
+        String id = scanner.next();
+
+        // Check for duplicate ID
+        if (studentIds.contains(id)) {
+            System.out.println("Student with ID " + id + " already exists. Please enter a different ID.");
+            return; 
+        }
+
+        // Add the ID to the set
+        studentIds.add(id);
+
+        //checks for invalid id format
+        try {
+            char[] arr = id.toCharArray();
+
+            if (arr.length == 6) {
+                for (int i = 0; i < arr.length; i++) {
+                    if ((i == 0 || i == 1) && (!Character.isLetter(arr[i]))) {
+                        idInvalid = true;
+                    }
+                    if ((i > 1) && (!Character.isDigit(arr[i]))) {
+                        idInvalid = true;
+                    }
+                }
+            } else {
+                idInvalid = true;
+            }
+
+            if (idInvalid) {
+                throw new IdException();
+            }
+
+        } catch (IdException ex) {
+            System.out.println("Invalid ID format. Please enter a valid ID.");
+            return;
+        }
+
+        if (!idInvalid) {
+            System.out.print("Student Type (PhD, MS or Undergrad): ");
+            String stdType = scanner.next();
+            System.out.println("Enter Remaining information");
+            String remainingInfo = scanner.nextLine();
+            remainingInfo = scanner.nextLine();
+            
+            // Split the information by |
+            String[] infoArray = remainingInfo.split("\\|");
+            
+            if (stdType.equalsIgnoreCase("PhD")) {
+                if (infoArray.length == 4) { 
+                    // Create a PhD student and add it to the map
+                    createPhdStudent(id, infoArray);
+                } else {
+                    System.out.println("Invalid format for Ph.D. student information.");
+                }
+            } else if (stdType.equalsIgnoreCase("MS")) {
+                // Create an MS student and add it to the map
+            } else if (stdType.equalsIgnoreCase("Undergrad")) {
+                // Create an Undergrad student and add it to the map
+            } else {
+                System.out.println("Invalid student type.");
+            }
+        }
+    }
+
+    //create and add a PhD student to the map
+    public static void createPhdStudent(String id, String[] infoArray) {
+        // Get information from the infoArray
+        String name = infoArray[0].trim();
+        String advisor = infoArray[1].trim();
+        String topic = infoArray[2].trim();
+        String classCode = infoArray[3].trim();
+        
+        // Create a list to hold class codes
+        List<String> classCodes = Arrays.asList(classCode.split(","));
+        
+        // Create a PhD student object
+        PhdStudent phdStudent = new PhdStudent(name, id, advisor, topic, classCodes);
+        
+        // Add the PhD student to the map
+        students.put(id, phdStudent);
+    }
+
+    private static Student createUndergraduateStudent(String id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private static Student createMsStudent(String id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public static PhdStudent createPhdStudent(String id, String info) {
+	    String[] parts = info.split("\\|");
+	    if (parts.length != 4) {
+	        System.out.println("Invalid format for Ph.D. student information.");
+	        return null;
+	    }
+
+	    // Extracting individual pieces of information
+	    String name = parts[0].trim();
+	    String advisor = parts[1].trim();
+	    String topic = parts[2].trim();
+	    String[] classCodes = parts[3].split(",");
+
+	    // Create a list to store class codes
+	    List<String> classCodeList = new ArrayList<>();
+	    for (String code : classCodes) {
+	        classCodeList.add(code.trim());
+	    }
+
+	    // Create and return PhdStudent object
+	    return new PhdStudent(name, id, advisor, topic, classCodeList);
+	}
+
+    
+	public static void deleteStudent() {
+	    System.out.print("Enter Student’s ID: ");
+	    String id = scanner.nextLine();
+	    boolean deleted = delete(id);
+	    if (deleted) {
+	        System.out.println("Student with ID " + id + " has been deleted.");
+	    } else {
+	        System.out.println("Student with ID " + id + " not found.");
+	    }
+	}
+	
+	public static boolean delete(String id) {
+	    if (students.containsKey(id)) {
+	        students.remove(id);
+	        return true;
+	    }
+	    return false;
+	}
+
+	public static void printFeeInvoice() {
+	    System.out.print("Enter Student’s ID: ");
+	    String id = scanner.nextLine();
+	    // Check if the student exists
+	    if (students.containsKey(id)) {
+	        // Get the student object
+	        Student student = students.get(id);
+	        // Print the fee invoice based on the student type
+	        student.printInvoice();
+	    } else {
+	        System.out.println("Student with ID " + id + " not found.");
+	    }
+	}
+
+
+    public static void printListOfStudents() {
+        List<String> phdStudents = new ArrayList<>();
+        List<String> msStudents = new ArrayList<>();
+        List<String> undergradStudents = new ArrayList<>();
+
+        for (Map.Entry<String, Student> entry : students.entrySet()) {
+            Student student = entry.getValue();
+            if (student instanceof PhdStudent) {
+                phdStudents.add(student.getName());
+            } else if (student instanceof MsStudent) {
+                msStudents.add(student.getName());
+            } else if (student instanceof UndergraduateStudent) {
+                undergradStudents.add(student.getName());
+            }
+        }
+
+        System.out.println("PhD Students");
+        System.out.println("------------");
+        for (String name : phdStudents) {
+            System.out.println("- " + name);
+        }
+
+        System.out.println("MS Students");
+        System.out.println("------------");
+        for (String name : msStudents) {
+            System.out.println("- " + name);
+        }
+
+        System.out.println("Undergraduate Students");
+        System.out.println("------------");
+        for (String name : undergradStudents) {
+            System.out.println("- " + name);
+        }
+    }
+
+
 
     public static void courseManagementMenu() {
         boolean exit = false;
@@ -107,18 +278,15 @@ public class ProjectDriver {
             System.out.print("Enter your selection: ");
             String option = scanner.next().toUpperCase();
 
-		switch (option) {
+            switch (option) {
                 case "A":
-			System.out.println("Enter the Class/Lab Number: ")
-			String crn = scanner.next();
+                    // Implement searchCourseOrLab method
                     break;
                 case "B":
-			System.out.println("Enter the Class/Lab Number to delete: ")
-			String deleteCrn = scanner.next();
+                    // Implement deleteCourseOrLab method
                     break;
                 case "C":
-			System.out.println("Enter Lab or Lecture: ")
-			String lab0rLecture = scanner.next().toUpperCase();
+                    // Implement addLabToCourse method
                     break;
                 case "X":
                     exit = true;
@@ -130,110 +298,140 @@ public class ProjectDriver {
     }
 }
 
+abstract class Student {
+    private String name;
+    private String id;
 
+    public Student(String name, String id) {
+        this.setName(name);
+        this.setId(id);
+    }
 
-abstract class Student{
-    String Name;
-    String id;
+    public String getName() {
+        return name;
+    }
+
+    public String getId() {
+        return id;
+    }
 
     public abstract void printInvoice();
-    public void saveData(){
 
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
+	public void setId(String id) {
+		this.id = id;
+	}
 }
 
-//UndergraduateStudent Class
-class UndergraduateStudent extends Student{
+class UndergraduateStudent extends Student {
+    private double tuitionPerCreditHour;
 
-    public void printInvoice(){
+    public UndergraduateStudent(String name, String id) {
+        super(name, id);
+        this.tuitionPerCreditHour = 120.25;
+    }
+
+    @Override
+    public void printInvoice() {
+    	System.out.println("\nVALENCE COLLEGE");
+        System.out.println("ORLANDO FL 10101");
+        System.out.println("---------------------");
+        System.out.println("\nFee Invoice Prepared for:");
+        System.out.println(getId() + " - " + getName());
+        System.out.println("\n");
+        System.out.println("1 Credit Hour = $120.25");
+        System.out.println("\n");
+        System.out.println("CRN\tCR_PREFIX\tCR_HOURS\tCost");
+        System.out.println("                   Health & id fees\t$" + 35);
+        System.out.println("-----------------------------------------------");
 
     }
 
-    public void setUndergradName(String Name){
-        this.Name = Name;
+
+    public void setUndergradName(String Name) {
+        this.setName(Name);
     }
 
-    public String getUndergradName(){
-        return Name;
+    public String getUndergradName() {
+        return getName();
     }
 
-    public void setUndergradId(String id){
-        this.id = id;
+    public void setUndergradId(String id) {
+        this.setId(id);
     }
 
-    public String getUndergradId(){
-        return id;
-    }
-
-}
-
-
-//abstract Graduate class
-abstract class GraduateStudent extends Student{
-    
-}
-
-
-
-
-//pHD student class ext. grad
-class PhdStudent extends GraduateStudent{
-
-    public void printInvoice(){
-        
-    }
-
-    public void setPhdName(String Name){
-        this.Name = Name;
-    }
-
-    public String getPhdName(){
-        return Name;
-    }
-
-    public void setPhdId(String id){
-        this.id = id;
-    }
-
-    public String getPhdId(){
-        return id;
+    public String getUndergradId() {
+        return getId();
     }
 }
 
+abstract class GraduateStudent extends Student {
+    private double researchFee;
 
-
-//MsStudent ext. Grad
-class MsStudent extends GraduateStudent{
-    public void printInvoice(){
-        
+    public GraduateStudent(String name, String id) {
+        super(name, id);
+        this.researchFee = 700.00;
     }
 
-    public void setGradName(String Name){
-        this.Name = Name;
+    public double getResearchFee() {
+        return researchFee;
+    }
+}
+
+class PhdStudent extends GraduateStudent {
+    private String advisor;
+    private String researchSubject;
+    private List<String> supervisedLabs;
+
+    public PhdStudent(String name, String id, String advisor, String researchSubject, List<String> classCodeList) {
+        super(name, id);
+        this.advisor = advisor;
+        this.researchSubject = researchSubject;
+        this.supervisedLabs = classCodeList;
     }
 
-    public String getGradName(){
-        return Name;
-    }
-
-    public void setGradId(String id){
-        this.id = id;
-    }
-
-    public String getGradId(){
-        return id;
+    @Override
+    public void printInvoice() {
+    	System.out.println("\nVALENCE COLLEGE");
+        System.out.println("ORLANDO FL 10101");
+        System.out.println("---------------------");
+        System.out.println("\nFee Invoice Prepared for:");
+        System.out.println(getId() + " - " + getName());
+        System.out.println("\n");
+        System.out.println("RESEARCH");
+        System.out.println("\n");
+        System.out.println("                   Health & id fees\t$" + 35);
+        System.out.println("-----------------------------------------------");
     }
 }
 
 
-//idException
+class MsStudent extends GraduateStudent {
+    public MsStudent(String name, String id) {
+        super(name, id);
+    }
+
+    @Override
+    public void printInvoice() {
+    	System.out.println("\nVALENCE COLLEGE");
+        System.out.println("ORLANDO FL 10101");
+        System.out.println("---------------------");
+        System.out.println("\nFee Invoice Prepared for:");
+        System.out.println(getId() + " - " + getName());
+        System.out.println("\n");
+        System.out.println("1 Credit Hour = $300.00");
+        System.out.println("\n");
+        System.out.println("CRN\tCR_PREFIX\tCR_HOURS\tCost");   
+        System.out.println("                   Health & id fees\t$" + 35);
+        System.out.println("-----------------------------------------------");
+    }
+}
+
 class IdException extends Exception {
-   	public IdException(){
-   		System.out.println("Invalid id format or ID already exists");
-   		System.out.println("Try again later!\n");
-   	}
+    public IdException() {
+        super("Invalid id format or ID already exists");
+    }
 }
-
-
-
