@@ -92,7 +92,7 @@ public class ProjectDriver {
 
         System.out.print("Enter Student's Type (PhD, MS or Undergrad): ");
         String stdType = scanner.next().toLowerCase();
-        System.out.println("Enter Remaining information (name|course): ");
+        System.out.println("Enter Remaining information: ");
         String remainingInfo = scanner.nextLine();
         remainingInfo = scanner.nextLine();
         
