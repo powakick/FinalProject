@@ -10,396 +10,408 @@ import java.util.Map;
 import java.util.Set;
 
 public class ProjectDriver {
-    static Scanner scanner = new Scanner(System.in);
-    static Set<String> studentIds = new HashSet<>();
-    static Map<String, Student> students = new HashMap<>();
+  static Scanner scanner = new Scanner(System.in);
+  static Set<String> studentIds = new HashSet<>();
+  static Map<String, Student> students = new HashMap<>();
+  static Map<Integer, CourseOrLab> courseOrLabMap = new HashMap<>();
 
-    public static void main(String[] args) {
-        boolean exit = false;
-        while (!exit) {
-            System.out.println("-------------------");
-            System.out.println("Main Menu");
-            System.out.println("1 : Student Management");
-            System.out.println("2 : Course Management");
-            System.out.println("0 : Exit");
-            System.out.print("Enter your selection: ");
-            int choice = scanner.nextInt();
-            switch (choice) {
-                case 1:
-                    studentManagementMenu();
-                    break;
-                case 2:
-                    courseManagementMenu();
-                    break;
-                case 0:
-                    exit = true;
-                    break;
-                default:
-                    System.out.println("Invalid option. Please try again.");
-            }
-        }
-        scanner.close(); 
+  public static void main(String[] args) {
+    // Hard-coded course and lab data
+    courseOrLabMap.put(89745,
+        new CourseOrLab(89745, "COT6578", "Advanced Computer theory", "Graduate", "F2F", "PSY-108", false, 4));
+    courseOrLabMap.put(66636, new CourseOrLab(66636, "DIG2158", "Introduction to Digital Systems", "Undergraduate",
+        "Online", null, false, 3));
+    courseOrLabMap.put(32658,
+        new CourseOrLab(32658, "COT6578", "Advanced Computer theory", "Graduate", "Mixed", "LPS-35", false, 4));
+    courseOrLabMap.put(69745,
+        new CourseOrLab(69745, "COP5698", "Programming Languages", "Graduate", "F2F", "CB2-122", true, 5));
+    courseOrLabMap.put(56980,
+        new CourseOrLab(56980, "CDL2587", "Introduction to Computers", "Undergraduate", "F2F", "MSB-116", true, 4));
+    courseOrLabMap.put(36636,
+        new CourseOrLab(36636, "SOF2058", "Introduction to Software", "Undergraduate", "Online", null, false, 3));
+    courseOrLabMap.put(12658,
+        new CourseOrLab(12658, "LOG5578", "Logic and Proof", "Graduate", "Mixed", "LPS-35", true, 3));
+    courseOrLabMap.put(60045,
+        new CourseOrLab(60045, "COP5690", "Programming Languages II", "Graduate", "F2F", "CB2-120", true, 4));
+    courseOrLabMap.put(51180,
+        new CourseOrLab(51180, "CDL2587", "Introduction to Computers", "Undergraduate", "Online", null, false, 3));
+    courseOrLabMap.put(36637,
+        new CourseOrLab(36637, "SOF2058", "Introduction to Software", "Undergraduate", "Online", null, false, 3));
+    courseOrLabMap.put(22658,
+        new CourseOrLab(22658, "LOG5578", "Logic and Proof", "Graduate", "F2F", "LPS-35", true, 3));
+    courseOrLabMap.put(69970,
+        new CourseOrLab(69970, "GOL1091", "Introduction to AI", "Graduate", "Online", null, false, 1));
+
+    boolean exit = false;
+    while (!exit) {
+      System.out.println("-------------------");
+      System.out.println("Main Menu");
+      System.out.println("1 : Student Management");
+      System.out.println("2 : Course Management");
+      System.out.println("0 : Exit");
+      System.out.print("Enter your selection: ");
+      int choice = scanner.nextInt();
+      switch (choice) {
+        case 1:
+          studentManagementMenu();
+          break;
+        case 2:
+          courseManagementMenu();
+          break;
+        case 0:
+          exit = true;
+          break;
+        default:
+          System.out.println("Invalid option. Please try again.");
+      }
+    }
+    scanner.close();
+  }
+
+  public static void studentManagementMenu() {
+    boolean exit = false;
+    while (!exit) {
+      System.out.println("-------------------");
+      System.out.println("Student Management Menu:");
+      System.out.println("A - Add a student");
+      System.out.println("B - Delete a Student");
+      System.out.println("C - Print Fee Invoice");
+      System.out.println("D - Print List of Students");
+      System.out.println("X - Back to main menu");
+      System.out.print("Enter your selection: ");
+      String option = scanner.next().toUpperCase();
+
+      switch (option) {
+        case "A":
+          addStudent();
+          break;
+        case "B":
+          deleteStudent();
+          break;
+        case "C":
+          printFeeInvoice();
+          break;
+        case "D":
+          printListOfStudents();
+          break;
+        case "X":
+          exit = true;
+          break;
+        default:
+          System.out.println("Invalid option. Please try again.");
+      }
+    }
+  }
+
+  public static void addStudent() {
+    boolean idInvalid = false;
+    System.out.print("Enter Student's ID: ");
+    String id = scanner.next();
+
+    // Check for duplicate ID
+    if (studentIds.contains(id)) {
+      System.out.println("Student with ID " + id + " already exists. Please enter a different ID.");
+      return;
     }
 
-    public static void studentManagementMenu() {
-        boolean exit = false;
-        while (!exit) {
-            System.out.println("-------------------");
-            System.out.println("Student Management Menu:");
-            System.out.println("A - Add a student");
-            System.out.println("B - Delete a Student");
-            System.out.println("C - Print Fee Invoice");
-            System.out.println("D - Print List of Students");
-            System.out.println("X - Back to main menu");
-            System.out.print("Enter your selection: ");
-            String option = scanner.next().toUpperCase();
+    // Add the ID to the set
+    studentIds.add(id);
 
-            switch (option) {
-                case "A":
-                    addStudent();
-                    break;
-                case "B":
-                    deleteStudent();
-                    break;
-                case "C":
-                    printFeeInvoice();
-                    break;
-                case "D":
-                    printListOfStudents();
-                    break;
-                case "X":
-                    exit = true;
-                    break;
-                default:
-                    System.out.println("Invalid option. Please try again.");
-            }
+    System.out.print("Enter Student's Type (PhD, MS or Undergrad): ");
+    String stdType = scanner.next().toLowerCase();
+    System.out.println("Enter Remaining information: ");
+    String remainingInfo = scanner.nextLine();
+    remainingInfo = scanner.nextLine();
+
+    // Split the information by |
+    String[] infoArray = remainingInfo.split("\\|");
+
+    switch (stdType) {
+      case "phd":
+        if (infoArray.length == 4) {
+          createPhdStudent(id, infoArray);
+        } else {
+          System.out.println("Invalid format for Ph.D. student information.");
         }
+        break;
+      case "ms":
+        if (infoArray.length == 2) {
+          createMsStudent(id, infoArray);
+        } else {
+          System.out.println("Invalid format for MS student information.");
+        }
+        break;
+      case "undergrad":
+        if (infoArray.length == 2) {
+          createUndergradStudent(id, infoArray);
+        } else {
+          System.out.println("Invalid format for undergraduate student information.");
+        }
+        break;
+      default:
+        System.out.println("Invalid student type.");
+    }
+  }
+
+  public static void createPhdStudent(String id, String[] infoArray) {
+    String name = infoArray[0].trim();
+    String advisor = infoArray[1].trim();
+    String topic = infoArray[2].trim();
+    String classCode = infoArray[3].trim();
+
+    List<String> classCodes = Arrays.asList(classCode.split(","));
+
+    PhdStudent phdStudent = new PhdStudent(name, id, advisor, topic, classCodes);
+
+    students.put(id, phdStudent);
+  }
+
+  public static void createMsStudent(String id, String[] infoArray) {
+    String name = infoArray[0].trim();
+    String course = infoArray[1].trim();
+
+    MsStudent msStudent = new MsStudent(name, course);
+
+    students.put(id, msStudent);
+  }
+
+  public static void createUndergradStudent(String id, String[] infoArray) {
+    String name = infoArray[0].trim();
+    String course = infoArray[1].trim();
+
+    UndergraduateStudent undergradStudent = new UndergraduateStudent(name, course);
+
+    students.put(id, undergradStudent);
+  }
+
+  public static void deleteStudent() {
+    System.out.print("Enter Student's ID: ");
+    String id = scanner.next();
+
+    boolean deleted = delete(id);
+    if (deleted) {
+      System.out.println("Student with ID " + id + " has been deleted.");
+    } else {
+      System.out.println("Student with ID " + id + " not found.");
+    }
+  }
+
+  public static boolean delete(String id) {
+    if (students.containsKey(id)) {
+      students.remove(id);
+      return true;
+    }
+    return false;
+  }
+
+  public static void printFeeInvoice() {
+    System.out.print("Enter Student's ID: ");
+    String id = scanner.next();
+
+    // Check if the student exists
+    if (!students.containsKey(id)) {
+      System.out.println("Student with ID " + id + " not found.");
+      return;
     }
 
-    public static void addStudent() {
-        boolean idInvalid = false;
-        System.out.print("Enter Student’s ID: ");
-        String id = scanner.next();
+    // Get the student object
+    Student student = students.get(id);
 
-        // Check for duplicate ID
-        if (studentIds.contains(id)) {
-            System.out.println("Student with ID " + id + " already exists. Please enter a different ID.");
-            return; 
-        }
+    // Print the fee invoice based on the student type
+    student.printInvoice();
+  }
 
-        // Add the ID to the set
-        studentIds.add(id);
+  public static void printListOfStudents() {
+    List<String> phdStudents = new ArrayList<>();
+    List<String> msStudents = new ArrayList<>();
+    List<String> undergradStudents = new ArrayList<>();
 
-        System.out.print("Enter Student's Type (PhD, MS or Undergrad): ");
-        String stdType = scanner.next().toLowerCase();
-        System.out.println("Enter Remaining information: ");
-        String remainingInfo = scanner.nextLine();
-        remainingInfo = scanner.nextLine();
-        
-        // Split the information by |
-        String[] infoArray = remainingInfo.split("\\|");
-        
-        switch (stdType) {
-            case "phd":
-                if (infoArray.length == 4) { 
-                    createPhdStudent(id, infoArray);
-                } else {
-                    System.out.println("Invalid format for Ph.D. student information.");
-                }
-                break;
-            case "ms":
-                if (infoArray.length == 2) { 
-                    createMsStudent(id, infoArray);
-                } else {
-                    System.out.println("Invalid format for MS student information.");
-                }
-                break;
-            case "undergrad":
-                if (infoArray.length == 2) { 
-                    createUndergradStudent(id, infoArray);
-                } else {
-                    System.out.println("Invalid format for undergraduate student information.");
-                }
-                break;
-            default:
-                System.out.println("Invalid student type.");
-        }
+    for (Map.Entry<String, Student> entry : students.entrySet()) {
+      Student student = entry.getValue();
+      if (student instanceof PhdStudent) {
+        phdStudents.add(student.getName());
+      } else if (student instanceof MsStudent) {
+        msStudents.add(student.getName());
+      } else if (student instanceof UndergraduateStudent) {
+        undergradStudents.add(student.getName());
+      }
     }
 
-    public static void createPhdStudent(String id, String[] infoArray) {
-        String name = infoArray[0].trim();
-        String advisor = infoArray[1].trim();
-        String topic = infoArray[2].trim();
-        String classCode = infoArray[3].trim();
-        
-        List<String> classCodes = Arrays.asList(classCode.split(","));
-        
-        PhdStudent phdStudent = new PhdStudent(name, id, advisor, topic, classCodes);
-        
-        students.put(id, phdStudent);
+    System.out.println("\nPhD Students");
+    System.out.println("------------");
+    for (String name : phdStudents) {
+      System.out.println("- " + name);
     }
 
-    public static void createMsStudent(String id, String[] infoArray) {
-        String name = infoArray[0].trim();
-        String course = infoArray[1].trim();
-        
-        MsStudent msStudent = new MsStudent(name, course);
-        
-        students.put(id, msStudent);
+    System.out.println("\nMS Students");
+    System.out.println("------------");
+    for (String name : msStudents) {
+      System.out.println("- " + name);
     }
 
-    public static void createUndergradStudent(String id, String[] infoArray) {
-        String name = infoArray[0].trim();
-        String course = infoArray[1].trim();
-        
-        UndergraduateStudent undergradStudent = new UndergraduateStudent(name, course);
-        
-        students.put(id, undergradStudent);
+    System.out.println("\nUndergraduate Students");
+    System.out.println("------------");
+    for (String name : undergradStudents) {
+      System.out.println("- " + name);
     }
+  }
 
-    
-	public static void deleteStudent() {
-	    System.out.print("Enter Student’s ID: ");
-	    String id = scanner.next();
-	    
-	    boolean deleted = delete(id);
-	    if (deleted) {
-	        System.out.println("Student with ID " + id + " has been deleted.");
-	    } else {
-	        System.out.println("Student with ID " + id + " not found.");
-	    }
-	}
+  public static void courseManagementMenu() {
+    boolean exit = false;
+    while (!exit) {
+      System.out.println("-------------------");
+      System.out.println("Course Management Menu:");
+      System.out.println("A - Search for a course or lab using the CRN");
+      System.out.println("B - Delete a course or lab");
+      System.out.println("C - Add a lab to a course");
+      System.out.println("X - Back to main menu");
+      System.out.print("Enter your selection: ");
+      String option = scanner.next().toUpperCase();
 
-	public static boolean delete(String id) {
-	    if (students.containsKey(id)) {
-	        students.remove(id);
-	        return true;
-	    }
-	    return false;
-	}
-
-	public static void printFeeInvoice() {
-	    System.out.print("Enter Student’s ID: ");
-	    String id = scanner.next();
-	    
-	    // Check if the student exists
-	    if (!students.containsKey(id)) {
-	        System.out.println("Student with ID " + id + " not found.");
-	        return;
-	    }
-	    
-	    // Get the student object
-	    Student student = students.get(id);
-	    
-	    // Print the fee invoice based on the student type
-	    student.printInvoice();
-	}
-
-
-
-    public static void printListOfStudents() {
-        List<String> phdStudents = new ArrayList<>();
-        List<String> msStudents = new ArrayList<>();
-        List<String> undergradStudents = new ArrayList<>();
-
-        for (Map.Entry<String, Student> entry : students.entrySet()) {
-            Student student = entry.getValue();
-            if (student instanceof PhdStudent) {
-                phdStudents.add(student.getName());
-            } else if (student instanceof MsStudent) {
-                msStudents.add(student.getName());
-            } else if (student instanceof UndergraduateStudent) {
-                undergradStudents.add(student.getName());
-            }
-        }
-
-        System.out.println("\nPhD Students");
-        System.out.println("------------");
-        for (String name : phdStudents) {
-            System.out.println("- " + name);
-        }
-
-        System.out.println("\nMS Students");
-        System.out.println("------------");
-        for (String name : msStudents) {
-            System.out.println("- " + name);
-        }
-
-        System.out.println("\nUndergraduate Students");
-        System.out.println("------------");
-        for (String name : undergradStudents) {
-            System.out.println("- " + name);
-        }
+      switch (option) {
+        case "A":
+          searchCourseOrLab();
+          break;
+        case "B":
+          // Implement deleteCourseOrLab method
+          break;
+        case "C":
+          // Implement addLabToCourse method
+          break;
+        case "X":
+          exit = true;
+          break;
+        default:
+          System.out.println("Invalid option. Please try again.");
+      }
     }
+  }
 
+  public static void searchCourseOrLab() {
+    System.out.print("Enter the 6-digit CRN: ");
+    int crn = scanner.nextInt();
 
-
-    public static void courseManagementMenu() {
-        boolean exit = false;
-        while (!exit) {
-            System.out.println("-------------------");
-            System.out.println("Course Management Menu:");
-            System.out.println("A - Search for a course or lab using the CRN");
-            System.out.println("B - Delete a course or lab");
-            System.out.println("C - Add a lab to a course");
-            System.out.println("X - Back to main menu");
-            System.out.print("Enter your selection: ");
-            String option = scanner.next().toUpperCase();
-
-            switch (option) {
-                case "A":
-                    // Implement searchCourseOrLab method
-                    break;
-                case "B":
-                    // Implement deleteCourseOrLab method
-                    break;
-                case "C":
-                    // Implement addLabToCourse method
-                    break;
-                case "X":
-                    exit = true;
-                    break;
-                default:
-                    System.out.println("Invalid option. Please try again.");
-            }
-        }
+    if (courseOrLabMap.containsKey(crn)) {
+      CourseOrLab courseOrLab = courseOrLabMap.get(crn);
+      System.out.println("\nCourse or Lab Information:");
+      System.out.println("CRN: " + courseOrLab.getCrn());
+      System.out.println("Course Code: " + courseOrLab.getCourseCode());
+      System.out.println("Course Name: " + courseOrLab.getCourseName());
+      System.out.println("Course Level: " + courseOrLab.getCourseLevel());
+      System.out.println("Delivery Mode: " + courseOrLab.getDeliveryMode());
+      System.out.println("Room: " + courseOrLab.getRoom());
+      System.out.println("Is Lab: " + (courseOrLab.isLab() ? "Yes" : "No"));
+      System.out.println("Credit Hours: " + courseOrLab.getCreditHours());
+    } else {
+      System.out.println("Course or Lab with CRN " + crn + " not found.");
     }
+  }
 }
 
 abstract class Student {
-    private String name;
-    private String id;
+  private String name;
+  private String id;
 
-    public Student(String name, String id) {
-        this.setName(name);
-        this.setId(id);
-    }
+  public Student(String name, String id) {
+    this.setName(name);
+    this.setId(id);
+  }
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public String getId() {
-        return id;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public abstract void printInvoice();
+  public abstract void printInvoice();
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+  public void setId(String id) {
+    this.id = id;
+  }
 }
 
 class UndergraduateStudent extends Student {
-    private double tuitionPerCreditHour;
+  private double tuitionPerCreditHour;
 
-    public UndergraduateStudent(String name, String id) {
-        super(name, id);
-        this.tuitionPerCreditHour = 120.25;
-    }
+  public UndergraduateStudent(String name, String id) {
+    super(name, id);
+    this.tuitionPerCreditHour = 120.25;
+  }
 
-    @Override
-    public void printInvoice() {
-    	System.out.println("\nVALENCE COLLEGE");
-        System.out.println("ORLANDO FL 10101");
-        System.out.println("---------------------");
-        System.out.println("\nFee Invoice Prepared for:");
-        System.out.println(getId() + " - " + getName());
-        System.out.println("\n");
-        System.out.println("1 Credit Hour = $120.25");
-        System.out.println("\n");
-        System.out.println("CRN\tCR_PREFIX\tCR_HOURS\tCost");
-        System.out.println("                   Health & id fees\t$" + 35);
-        System.out.println("-----------------------------------------------");
+  @Override
+  public void printInvoice() {
+    System.out.println("\nVALENCE COLLEGE");
+    System.out.println("ORLANDO FL 10101");
+    System.out.println("---------------------");
+    System.out.println("\nFee Invoice Prepared for:");
+    System.out.println(getId() + " - " + getName());
+    System.out.println("\n");
+    System.out.println("1 Credit Hour = $120.25");
+    System.out.println("\n");
+    System.out.println("CRN\tCR_PREFIX\tCR_HOURS\tCost");
+    System.out.println("                   Health & id fees\t$" + 35);
+    System.out.println("-----------------------------------------------");
+  }
 
-    }
+  public void setUndergradName(String Name) {
+    this.setName(Name);
+  }
 
+  public String getUndergradName() {
+    return getName();
+  }
 
-    public void setUndergradName(String Name) {
-        this.setName(Name);
-    }
+  public void setUndergradId(String id) {
+    this.setId(id);
+  }
 
-    public String getUndergradName() {
-        return getName();
-    }
-
-    public void setUndergradId(String id) {
-        this.setId(id);
-    }
-
-    public String getUndergradId() {
-        return getId();
-    }
+  public String getUndergradId() {
+    return getId();
+  }
 }
 
 abstract class GraduateStudent extends Student {
-    private double researchFee;
+  private double researchFee;
 
-    public GraduateStudent(String name, String id) {
-        super(name, id);
-        this.researchFee = 700.00;
-    }
+  public GraduateStudent(String name, String id) {
+    super(name, id);
+    this.researchFee = 700.00;
+  }
 
-    public double getResearchFee() {
-        return researchFee;
-    }
+  public double getResearchFee() {
+    return researchFee;
+  }
 }
 
 class PhdStudent extends GraduateStudent {
-    private String advisor;
-    private String researchSubject;
-    private List<String> supervisedLabs;
+  private String advisor;
+  private String researchSubject;
+  private List<String> supervisedLabs;
 
-    public PhdStudent(String name, String id, String advisor, String researchSubject, List<String> classCodeList) {
-        super(name, id);
-        this.advisor = advisor;
-        this.researchSubject = researchSubject;
-        this.supervisedLabs = classCodeList;
-    }
+  public PhdStudent(String name, String id, String advisor, String researchSubject, List<String> classCodeList) {
+    super(name, id);
+    this.advisor = advisor;
+    this.researchSubject = researchSubject;
+    this.supervisedLabs = classCodeList;
+  }
 
-    @Override
-    public void printInvoice() {
-    	System.out.println("\nVALENCE COLLEGE");
-        System.out.println("ORLANDO FL 10101");
-        System.out.println("---------------------");
-        System.out.println("\nFee Invoice Prepared for:");
-        System.out.println(getId() + " - " + getName());
-        System.out.println("\n");
-        System.out.println("RESEARCH");
-        System.out.println("\n");
-        System.out.println("                   Health & id fees\t$" + 35);
-        System.out.println("-----------------------------------------------");
-    }
-}
-
-
-class MsStudent extends GraduateStudent {
-    public MsStudent(String name, String id) {
-        super(name, id);
-    }
-
-    @Override
-    public void printInvoice() {
-    	System.out.println("\nVALENCE COLLEGE");
-        System.out.println("ORLANDO FL 10101");
-        System.out.println("---------------------");
-        System.out.println("\nFee Invoice Prepared for:");
-        System.out.println(getId() + " - " + getName());
-        System.out.println("\n");
-        System.out.println("1 Credit Hour = $300.00");
-        System.out.println("\n");
-        System.out.println("CRN\tCR_PREFIX\tCR_HOURS\tCost");   
-        System.out.println("                   Health & id fees\t$" + 35);
-        System.out.println("-----------------------------------------------");
-    }
-}
-
-class IdException extends Exception {
-    public IdException() {
-        super("Invalid id format or ID already exists");
-    }
+  @Override
+  public void printInvoice() {
+    System.out.println("\nVALENCE COLLEGE");
+    System.out.println("ORLANDO FL 10101");
+    System.out.println("---------------------");
+    System.out.println("\nFee Invoice Prepared for:");
+    System.out.println(getId() + " - " + getName());
+    System.out.println("\n");
+    System.out.println("RESEARCH");
+    System.out.println("\n");
+    System.out.println("                   Health & id fees\t$" + 35);
+    System.out.println("-----------------------------------------------");
+  }
 }
