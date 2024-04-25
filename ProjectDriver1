@@ -8,6 +8,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 
 public class ProjectDriver {
     static Scanner scanner = new Scanner(System.in);
@@ -234,37 +238,138 @@ public class ProjectDriver {
 
 
 
-    public static void courseManagementMenu() {
-        boolean exit = false;
-        while (!exit) {
-            System.out.println("-------------------");
-            System.out.println("Course Management Menu:");
-            System.out.println("A - Search for a course or lab using the CRN");
-            System.out.println("B - Delete a course or lab");
-            System.out.println("C - Add a lab to a course");
-            System.out.println("X - Back to main menu");
-            System.out.print("Enter your selection: ");
-            String option = scanner.next().toUpperCase();
+   public static void courseManagementMenu() {
+    boolean exit = false;
+    while (!exit) {
+      System.out.println("-------------------");
+      System.out.println("Course Management Menu:");
+      System.out.println("A - Search for a course or lab using the CRN");
+      System.out.println("B - Delete a course or lab");
+      System.out.println("C - Add a lab to a course");
+      System.out.println("X - Back to main menu");
+      System.out.print("Enter your selection: ");
+      String option = scanner.next().toUpperCase();
 
-            switch (option) {
-                case "A":
-                    // Implement searchCourseOrLab method
-                    break;
-                case "B":
-                    // Implement deleteCourseOrLab method
-                    break;
-                case "C":
-                    // Implement addLabToCourse method
-                    break;
-                case "X":
-                    exit = true;
-                    break;
-                default:
-                    System.out.println("Invalid option. Please try again.");
-            }
-        }
+      switch (option) {
+        case "A":
+          searchCourseOrLab();
+          break;
+        case "B":
+          deleteCourseOrLab();
+          break;
+        case "C":
+          addLabToCourse();
+          break;
+        case "X":
+          exit = true;
+          break;
+        default:
+          System.out.println("Invalid option. Please try again.");
+      }
     }
+  }
+
+  public static void searchCourseOrLab() {
+    System.out.print("Enter the CRN: ");
+    int crn = scanner.nextInt();
+    scanner.nextLine(); // consume newline character
+
+    try {
+      List<String> lines = Files.readAllLines(Paths.get("lect.txt"));
+      for (String line : lines) {
+        String[] parts = line.split(",");
+        if (Integer.parseInt(parts[0]) == crn) {
+          System.out.println("Course found:");
+          System.out.println("CRN: " + parts[0]);
+          System.out.println("Course Code: " + parts[1]);
+          System.out.println("Course Name: " + parts[2]);
+          System.out.println("Level: " + parts[3]);
+          System.out.println("Delivery: " + parts[4]);
+          System.out.println("Room: " + parts[5]);
+          System.out.println("Lab: " + (parts[6].equals("YES") ? "Yes" : "No"));
+          System.out.println("Credits: " + parts[7]);
+          return;
+        }
+      }
+      System.out.println("Course or lab not found.");
+    } catch (IOException e) {
+      System.out.println("Error reading file: " + e.getMessage());
+    }
+  }
+
+  public static void deleteCourseOrLab() {
+    System.out.print("Enter the CRN: ");
+    int crn = scanner.nextInt();
+    scanner.nextLine(); // consume newline character
+
+    try {
+      List<String> lines = Files.readAllLines(Paths.get("lect.txt"));
+      List<String> updatedLines = new ArrayList<>();
+      boolean found = false;
+      for (String line : lines) {
+        String[] parts = line.split(",");
+        if (Integer.parseInt(parts[0]) == crn) {
+          System.out.println("Course or lab deleted: " + parts[1] + " - " + parts[2]);
+          found = true;
+        } else {
+          updatedLines.add(line);
+        }
+      }
+      if (!found) {
+        System.out.println("Course or lab not found.");
+      } else {
+        Files.write(Paths.get("lect.txt"), String.join("\n", updatedLines).getBytes());
+      }
+    } catch (IOException e) {
+      System.out.println("Error reading or writing file: " + e.getMessage());
+    }
+  }
+
+  public static void addLabToCourse() {
+    System.out.print("Enter the CRN: ");
+    int crn = scanner.nextInt();
+    scanner.nextLine(); // consume newline character
+
+    try {
+      List<String> lines = Files.readAllLines(Paths.get("lect.txt"));
+      List<String> updatedLines = new ArrayList<>();
+      boolean found = false;
+      for (String line : lines) {
+        String[] parts = line.split(",");
+        if (Integer.parseInt(parts[0]) == crn) {
+          if (parts[6].equals("YES")) {
+            System.out.println("Course already has a lab.");
+            return;
+          }
+          StringBuilder updatedLine = new StringBuilder();
+          for (int i = 0; i < parts.length; i++) {
+            if (i == 6) {
+              updatedLine.append("YES");
+            } else {
+              updatedLine.append(parts[i]);
+            }
+            if (i < parts.length - 1) {
+              updatedLine.append(",");
+            }
+          }
+          updatedLines.add(updatedLine.toString());
+          System.out.println("Lab added to course: " + parts[1] + " - " + parts[2]);
+          found = true;
+        } else {
+          updatedLines.add(line);
+        }
+      }
+      if (!found) {
+        System.out.println("Course not found.");
+      } else {
+        Files.write(Paths.get("lect.txt"), String.join("\n", updatedLines).getBytes());
+      }
+    } catch (IOException e) {
+      System.out.println("Error reading or writing file: " + e.getMessage());
+    }
+  }
 }
+
 
 abstract class Student {
     private String name;
