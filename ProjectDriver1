@@ -25,7 +25,7 @@ public class ProjectDriver {
       System.out.println("1 : Student Management");
       System.out.println("2 : Course Management");
       System.out.println("0 : Exit");
-      System.out.print("Enter your selection: ");
+      System.out.print("\nEnter your selection: ");
       int choice = scanner.nextInt();
       switch (choice) {
         case 1:
@@ -54,7 +54,7 @@ public class ProjectDriver {
       System.out.println("C - Print Fee Invoice");
       System.out.println("D - Print List of Students");
       System.out.println("X - Back to main menu");
-      System.out.print("Enter your selection: ");
+      System.out.print("\nEnter your selection: ");
       String option = scanner.next().toUpperCase();
 
       switch (option) {
@@ -235,13 +235,13 @@ public class ProjectDriver {
   public static void courseManagementMenu() {
     boolean exit = false;
     while (!exit) {
-      System.out.println("-------------------");
-      System.out.println("Course Management Menu:");
-      System.out.println("A - Search for a course or lab using the CRN");
-      System.out.println("B - Delete a course or lab");
-      System.out.println("C - Add a lab to a course");
+      System.out.println("\n-------------------");
+      System.out.println("\nCourse Management Menu:" + "\n\n" + "Choose one of: \n");
+      System.out.println("A - Search for a course or lab using the class/lab number");
+      System.out.println("B - delete a class");
+      System.out.println("C - Add a lab to a class");
       System.out.println("X - Back to main menu");
-      System.out.print("Enter your selection: ");
+      System.out.print("\nEnter your selection: ");
       String option = scanner.next().toUpperCase();
 
       switch (option) {
@@ -264,86 +264,85 @@ public class ProjectDriver {
   }
 
   public static void searchCourseOrLab() {
-    System.out.print("Enter the CRN: ");
+    System.out.print("\nEnter the Class/Lab Number: ");
     int crn = scanner.nextInt();
     scanner.nextLine(); // consume newline character
-    String labRoom = ""; 
+    String labRoom = "";
     try {
       List<String> lines = Files.readAllLines(Paths.get("lect.txt").toAbsolutePath());
       for (String line : lines) {
         String[] parts = line.split(",");
-        ArrayList<String> parts2 = new ArrayList<String>(); 
-          for(String S: parts){
-            parts2.add(S); 
-        //    System.out.println(parts2); 
-          }
-       // System.out.println(parts2.get(0));
-        if(Integer.parseInt(parts2.get(0)) == crn && parts2.size() != 2){
-          System.out.println("[ " + parts2.get(0) + " , " + parts2.get(1) + " , " + parts2.get(2) + "]"); 
-          return;
+        ArrayList<String> parts2 = new ArrayList<String>();
+        for (String S : parts) {
+          parts2.add(S);
+          // System.out.println(parts2);
         }
-        else {
-          
-          ArrayList<String> mainClass = new ArrayList<String>(); 
-            for(String S : parts2){
-              mainClass.add(S);
-            }
-          //  System.out.println("Searching for lab for: " +  mainClass.get(0));
-          int curentLine = lines.indexOf(line);
-            
-          do{
-           // String temp = Files.readAllLines(Paths.get("lect.txt").toAbsolutePath()).last();
-            if(curentLine == lines.size()-1){
-              System.out.println("[]"); 
-              return; 
-            }
-            curentLine++; 
-            String newLine = lines.get(curentLine);
-             // System.out.println(newLine);
-              parts = newLine.split(",");
-              parts2.clear();
-                for(String S: parts){
-                  parts2.add(S); 
-              //    System.out.println(parts2); 
-                }
-          //  System.out.println("comparing " + parts2.get(0)); 
-            if(Integer.parseInt(parts2.get(0)) == crn && parts2.size() == 2){
-              System.out.println("\n");
-              System.out.println("Lab for " + "[" + mainClass.get(0) + ", " + mainClass.get(1) + ", " + mainClass.get(2) + "]" + "\n"); 
-              System.out.println("Lab Room " +  parts2.get(1)); 
-              return;
-              }
-              
-            }while(parts2.size() == 2);//end of while
-          }//end of else
-            
-          if(!labRoom.isEmpty()){
-            System.out.println("Lab Room: " + labRoom);
+        // System.out.println(parts2.get(0));
+        if (Integer.parseInt(parts2.get(0)) == crn && parts2.size() != 2) {
+          System.out.println("[ " + parts2.get(0) + " , " + parts2.get(1) + " , " + parts2.get(2) + "]");
+          return;
+        } else {
+
+          ArrayList<String> mainClass = new ArrayList<String>();
+          for (String S : parts2) {
+            mainClass.add(S);
           }
+          // System.out.println("Searching for lab for: " + mainClass.get(0));
+          int curentLine = lines.indexOf(line);
 
+          do {
+            // String temp =
+            // Files.readAllLines(Paths.get("lect.txt").toAbsolutePath()).last();
+            if (curentLine == lines.size() - 1) {
+              System.out.println("[]");
+              return;
+            }
+            curentLine++;
+            String newLine = lines.get(curentLine);
+            // System.out.println(newLine);
+            parts = newLine.split(",");
+            parts2.clear();
+            for (String S : parts) {
+              parts2.add(S);
+              // System.out.println(parts2);
+            }
+            // System.out.println("comparing " + parts2.get(0));
+            if (Integer.parseInt(parts2.get(0)) == crn && parts2.size() == 2) {
+              System.out.println("\n");
+              System.out.println(
+                  "Lab for " + "[" + mainClass.get(0) + ", " + mainClass.get(1) + ", " + mainClass.get(2) + "]");
+              System.out.println("Lab Room " + parts2.get(1));
+              return;
+            }
 
+          } while (parts2.size() == 2);// end of while
+        } // end of else
 
+        if (!labRoom.isEmpty()) {
+          System.out.println("Lab Room: " + labRoom);
+        }
 
-          
-          /*System.out.println("CRN: " + parts[0]);
-          System.out.println("Course Code: " + parts[1]);
-          System.out.println("Course Name: " + parts[2]);
-          System.out.println("Level: " + parts[3]);
-          System.out.println("Delivery: " + parts[4]);
-          System.out.println("Room: " + parts[5]);
-          System.out.println("Lab: " + (parts[6].equals("YES") ? "Yes" : "No"));
-          System.out.println("Credits: " + parts[7]);*/
-          
-        }//end of lines for
+        /*
+         * System.out.println("CRN: " + parts[0]);
+         * System.out.println("Course Code: " + parts[1]);
+         * System.out.println("Course Name: " + parts[2]);
+         * System.out.println("Level: " + parts[3]);
+         * System.out.println("Delivery: " + parts[4]);
+         * System.out.println("Room: " + parts[5]);
+         * System.out.println("Lab: " + (parts[6].equals("YES") ? "Yes" : "No"));
+         * System.out.println("Credits: " + parts[7]);
+         */
+
+      } // end of lines for
       System.out.println("Course or lab not found.");
-      }//end of try
-      catch (IOException e) {
+    } // end of try
+    catch (IOException e) {
       System.out.println("Error reading file: " + e.getMessage());
     }
   }
 
   public static void deleteCourseOrLab() {
-    System.out.print("Enter the CRN: ");
+    System.out.print("Enter the Class/Lab Number: ");
     int crn = scanner.nextInt();
     scanner.nextLine(); // consume newline character
 
@@ -354,7 +353,7 @@ public class ProjectDriver {
       for (String line : lines) {
         String[] parts = line.split(",");
         if (Integer.parseInt(parts[0]) == crn) {
-          System.out.println("Course or lab deleted: " + parts[1] + " - " + parts[2]);
+          System.out.println("[" + parts[0] + ", " + parts[1] + ", " + parts[2] + "]" + " deleted!");
           found = true;
         } else {
           updatedLines.add(line);
@@ -371,7 +370,7 @@ public class ProjectDriver {
   }
 
   public static void addLabToCourse() {
-    System.out.print("Enter the CRN: ");
+    System.out.print("Enter the Class/Lab Number: ");
     int crn = scanner.nextInt();
     scanner.nextLine(); // consume newline character
 
@@ -405,7 +404,7 @@ public class ProjectDriver {
         }
       }
       if (!found) {
-        System.out.println("Course not found.");
+        System.out.println("No Such Lecture Exists!");
       } else {
         Files.write(Paths.get("lect.txt"), String.join("\n", updatedLines).getBytes());
       }
