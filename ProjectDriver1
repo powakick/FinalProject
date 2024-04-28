@@ -1,3 +1,4 @@
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -161,7 +162,7 @@ public class ProjectDriver {
 
 	    double totalCost = calculateTotalCost(course, 300.00); // Assuming $300 per credit hour for MS students
 
-	    MsStudent msStudent = new MsStudent(name, course, totalCost);
+	    MsStudent msStudent = new MsStudent(name, course);
 
 	    students.put(id, msStudent);
 	}
@@ -615,25 +616,84 @@ class PhdStudent extends GraduateStudent {
 }
 
 class MsStudent extends GraduateStudent {
-  public MsStudent(String name, String id, double totalCost) {
-    super(name, id);
-  }
+	  private String course;
+	  private double totalCost;
+	  private double tuitionPerCreditHour; // Tuition per credit hour for MS students
 
-  @Override
-  public void printInvoice() {
-    System.out.println("\nVALENCE COLLEGE");
-    System.out.println("ORLANDO FL 10101");
-    System.out.println("---------------------");
-    System.out.println("\nFee Invoice Prepared for:");
-    System.out.println(getId() + " - " + getName());
-    System.out.println("\n");
-    System.out.println("1 Credit Hour = $300.00");
-    System.out.println("\n");
-    System.out.println("CRN\tCR_PREFIX\tCR_HOURS\tCost");
-    System.out.println("                   Health & id fees\t$" + 35);
-    System.out.println("-----------------------------------------------");
-  }
-}
+	  public MsStudent(String name, String course) {
+	    super(name, ""); // Call the superclass constructor with name and an empty string for ID
+	    this.course = course;
+	    this.totalCost = calculateTotalCost(course, 300.00); // Assuming $300 per credit hour for MS students
+	    this.tuitionPerCreditHour = 300.00; // Update the tuition per credit hour for MS students
+	  }
+
+	  // Method to calculate the total cost for the course
+	  private double calculateTotalCost(String course, double costPerCredit) {
+	    double totalCost = 0.0;
+
+	    try {
+	        List<String> lines = Files.readAllLines(Paths.get("lect.txt"));
+	        for (String line : lines) {
+	            String[] parts = line.split(",");
+	            if (parts[1].trim().equals(course)) { // Using parts[1] to compare with the course code
+	                double credits = Double.parseDouble(parts[parts.length - 1].trim()); // Read the last number as credits
+	                totalCost += credits * costPerCredit;
+	            }
+	        }
+	    } catch (IOException e) {
+	        System.out.println("Error reading file: " + e.getMessage());
+	    }
+
+	    return totalCost;
+	  }
+
+	  @Override
+	  public void printInvoice() {
+	    System.out.println("\nVALENCE COLLEGE");
+	    System.out.println("ORLANDO FL 10101");
+	    System.out.println("---------------------");
+	    System.out.println("\nFee Invoice Prepared for:");
+	    System.out.println(getId() + " - " + getName());
+	    System.out.println("\n");
+	    System.out.println("1 Credit Hour = $" + tuitionPerCreditHour);
+	    System.out.println("\n");
+	    System.out.println("CRN\tCR_PREFIX\tCR_HOURS\tCost");
+
+	    try {
+	        List<String> lines = Files.readAllLines(Paths.get("lect.txt"));
+	        for (String line : lines) {
+	            String[] parts = line.split(",");
+	            // Check if the parts array has enough elements
+	            if (parts.length >= 8) { // Ensure there are at least 8 elements
+	                // Assuming the CRN is at index 0 and course code is at index 1
+	                int crn = Integer.parseInt(parts[0].trim());
+	                String crPrefix = parts[1].trim();
+	                int crHours = Integer.parseInt(parts[7].trim()); // Assuming credits are at index 7
+	                double cost = crHours * tuitionPerCreditHour;
+	                System.out.println(crn + "\t" + crPrefix + "\t\t" + crHours + "\t\t$" + cost);
+	                System.out.println("-----------------------------------------------");
+	                double total = cost + 35;
+	                System.out.printf("                                        $%.2f%n", total);
+	            } else if (parts.length >= 6) { // Check if the parts array has at least 6 elements
+	                // Handle cases where there are fewer elements
+	                // Assuming the CRN is at index 0 and course code is at index 1
+	                int crn = Integer.parseInt(parts[0].trim());
+	                String crPrefix = parts[1].trim();
+	                // Assuming credits are not available, set to 0
+	                int crHours = 0;
+	                double cost = 0.0;
+	                System.out.println(crn + "\t" + crPrefix + "\t\t" + crHours + "\t\t$" + cost);
+	                System.out.println("-----------------------------------------------");
+	                double total = cost + 35;
+	                System.out.printf("                                        $%.2f%n", total);
+	            } else {
+	            }
+	        }
+	    } catch (IOException e) {
+	        System.out.println("Error reading file: " + e.getMessage());
+	    }
+	  }
+	}
 
 class IdException extends Exception {
   public IdException() {
