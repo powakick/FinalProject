@@ -404,49 +404,59 @@ public class ProjectDriver {
     }
   }
 
-  public static void addLabToCourse() {
-    System.out.print("Enter the Class/Lab Number: ");
-    int crn = scanner.nextInt();
-    scanner.nextLine(); // consume newline character
+    public static void addLabToCourse() {
+        System.out.print("Enter the Class/Lab Number: ");
+        int crn = scanner.nextInt();
 
-    try {
-      List<String> lines = Files.readAllLines(Paths.get("lect.txt"));
-      List<String> updatedLines = new ArrayList<>();
-      boolean found = false;
-      for (String line : lines) {
-        String[] parts = line.split(",");
-        if (Integer.parseInt(parts[0]) == crn) {
-          if (parts[6].equals("YES")) {
-            System.out.println("Course already has a lab.");
-            return;
-          }
-          StringBuilder updatedLine = new StringBuilder();
-          for (int i = 0; i < parts.length; i++) {
-            if (i == 6) {
-              updatedLine.append("YES");
+        String labAdd = " ";
+        String newLab = " ";
+        String newRoom = " ";
+        scanner.nextLine(); // consume newline character
+            // System.out.println(parts2.get(0));
+        //    if (Integer.parseInt(parts2.get(0)) == crn && parts2.size() != 2) {
+
+        try {
+            List<String> lines = Files.readAllLines(Paths.get("lect.txt"));
+            List<String> updatedLines = new ArrayList<>();
+            boolean found = false;
+            for (String line : lines) {
+                String[] parts = line.split(",");
+                // System.out.println(parts2.get(0));
+                if (Integer.parseInt(parts[0]) == crn) {
+
+                    String hasLab = parts[6];
+                    if (hasLab.equals("No")) {
+                        System.out.println("This lecture does not have labs");
+                        return;
+                    }
+
+                    if (hasLab.equals("YES")) {
+                        System.out.println("Enter the lab number you will add: ");
+                        newLab = scanner.nextLine();
+                        System.out.println("Enter the room number of the lab: ");
+                        newRoom = scanner.nextLine();
+                        labAdd = (newLab + "," + newRoom);
+                        found = true;
+                    }
+
+                }
+                if (Integer.parseInt(parts[0]) == crn) {
+                    updatedLines.add(line);
+                    updatedLines.add(labAdd);
+                }
+                else {
+                    updatedLines.add(line);
+                }
+            }
+            if (!found) {
+                System.out.println("No Such Lecture Exists!");
             } else {
-              updatedLine.append(parts[i]);
+                Files.write(Paths.get("lect.txt"), String.join("\n", updatedLines).getBytes());
             }
-            if (i < parts.length - 1) {
-              updatedLine.append(",");
-            }
-          }
-          updatedLines.add(updatedLine.toString());
-          System.out.println("Lab added to course: " + parts[1] + " - " + parts[2]);
-          found = true;
-        } else {
-          updatedLines.add(line);
+        } catch (IOException e) {
+            System.out.println("Error reading or writing file: " + e.getMessage());
         }
-      }
-      if (!found) {
-        System.out.println("No Such Lecture Exists!");
-      } else {
-        Files.write(Paths.get("lect.txt"), String.join("\n", updatedLines).getBytes());
-      }
-    } catch (IOException e) {
-      System.out.println("Error reading or writing file: " + e.getMessage());
     }
-  }
 }
 
 abstract class Student {
